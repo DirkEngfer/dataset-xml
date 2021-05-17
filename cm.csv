@@ -1,0 +1,4 @@
+studyid,domain,usubjid,cmseq,cmtrt,cmstdtc,cmdose,cmdosu
+abc,CM,xyz,1,"dummy treatment: <"something in quotes wrapped in braces">",2014-09-20,1.000000000001,STUPID DOSE UNIT
+abc,CM,xyz,2,something without dose and date information,,,
+abc,CM,xyz,3,ASPIRIN,2014-09-20,100,MG

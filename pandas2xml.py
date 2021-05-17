@@ -3,6 +3,8 @@
 
 """Convert pandas dataframe to XML (cdisc dataset-xml)
    by Dirk Engfer, https://www.datascience-dirk-engfer.de/
+   Updates:
+     May 17, 2021: Handle missing values and convert cm.csv via Pandas dataframe.
 """
 
 import os, numpy as np
@@ -17,9 +19,11 @@ homedir = os.getenv('HOME')
 
 datapath = os.path.join(homedir, 'Dokumente','cdisc_dataset_xml_v1','Example', 'xml_concomitant_medication')
 
-df = pd.read_csv(datapath+'/cm2.csv', header=0, sep=',')
-df['cmdose'] = df['cmdose'].astype(str)
+df = pd.read_csv(datapath+'/cm.csv', header=0, sep=',')
+df['cmdose'] = df['cmdose'].astype(str) # make 'nan' strings from np.NaN needed by itertuples text results
+df['cmdosu'] = df['cmdosu'].astype(str)
 df['cmseq'] = df['cmseq'].astype(str)
+df['cmstdtc'] = df['cmstdtc'].astype(str)
 #print(df.head())
 
 
@@ -68,21 +72,25 @@ for i, row in enumerate(df.itertuples()):
   item.set('ItemOID', 'IT.CM.CMSEQ')
   item.set('Value', row.cmseq)
 
-  item = SubElement(igd, 'ItemData')
-  item.set('ItemOID', 'IT.CM.CMTRT')
-  item.set('Value', row.cmtrt)
+  if row.cmtrt != 'nan':
+    item = SubElement(igd, 'ItemData')
+    item.set('ItemOID', 'IT.CM.CMTRT')
+    item.set('Value', row.cmtrt)
 
-  item = SubElement(igd, 'ItemData')
-  item.set('ItemOID', 'IT.CM.CMSTDTC')
-  item.set('Value', row.cmstdtc)
+  if row.cmstdtc != 'nan':
+    item = SubElement(igd, 'ItemData')
+    item.set('ItemOID', 'IT.CM.CMSTDTC')
+    item.set('Value', row.cmstdtc)
 
-  item = SubElement(igd, 'ItemData')
-  item.set('ItemOID', 'IT.CM.CMDOSE')
-  item.set('Value', row.cmdose)
+  if row.cmdose != 'nan':
+    item = SubElement(igd, 'ItemData')
+    item.set('ItemOID', 'IT.CM.CMDOSE')
+    item.set('Value', row.cmdose)
 
-  item = SubElement(igd, 'ItemData')
-  item.set('ItemOID', 'IT.CM.CMDOSU')
-  item.set('Value', row.cmdosu)
+  if row.cmdosu != 'nan':
+    item = SubElement(igd, 'ItemData')
+    item.set('ItemOID', 'IT.CM.CMDOSU')
+    item.set('Value', row.cmdosu)
 
 with open(output_xml_file, 'w') as f:
   try:
